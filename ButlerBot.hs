@@ -23,9 +23,14 @@ httpGetJson url = do
     Error s -> return Nothing
 
 -- get the value in a JSON object that has this key
-getByKey :: JSValue -> String -> Maybe JSValue
-getByKey (JSObject obj) key = lookup key (fromJSObject obj)
+getByKey :: String -> JSValue -> Maybe JSValue
+getByKey key (JSObject obj) = lookup key (fromJSObject obj)
 getByKey _ _ = Nothing
+
+-- get the value in a JSON array at this index
+getByIndex :: Int -> JSValue -> Maybe JSValue
+getByIndex index (JSArray arr) = return (arr !! index)
+getByIndex _ _ = Nothing
 
 -- todaysWeather :: JSObject JSValue -> String
 todaysWeather json =

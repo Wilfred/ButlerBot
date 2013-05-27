@@ -1,0 +1,11 @@
+Name:                ButlerBot
+Version:             0.1
+Description:         Daily email news
+License:             GPL
+Author:              Wilfred Hughes
+Maintainer:          me@wilfred.me.uk
+Build-Type:          Simple
+Cabal-Version:       >=1.2
+Executable butler-bot
+  Main-is:           ButlerBot.hs
+  Build-Depends:     base

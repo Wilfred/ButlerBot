@@ -26,4 +26,21 @@ httpGetJson url = do
 httpGetJsonObject :: URLString -> IO (Maybe (JSObject JSValue))
 httpGetJsonObject url = httpGetJson url
 
+-- get the first item in the list matching a predicate
+getFirst :: [a] -> (a -> Bool) -> Maybe a
+getFirst [] pred = Nothing
+getFirst (x:xs) pred =
+  case pred x of
+    True -> Just x
+    False -> getFirst xs pred
+
+-- todaysWeather :: JSObject JSValue -> String
+todaysWeather json =
+  getFirst keyValues dailyEntries
+  where keyValues = fromJSObject json
+        dailyEntries (key, value) =
+          case key of
+            "daily" -> True
+            _ -> False
+
 main = putStrLn "Hello, World!"

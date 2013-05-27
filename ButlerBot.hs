@@ -22,10 +22,6 @@ httpGetJson url = do
     Ok object -> return (Just object)
     Error s -> return Nothing
 
--- assume that our URL returns an object at the top level
-httpGetJsonObject :: URLString -> IO (Maybe (JSObject JSValue))
-httpGetJsonObject url = httpGetJson url
-
 -- get the value in a JSON object that has this key
 getByKey :: JSValue -> String -> Maybe JSValue
 getByKey (JSObject obj) key = lookup key (fromJSObject obj)

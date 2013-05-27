@@ -28,21 +28,8 @@ httpGetJsonObject url = httpGetJson url
 
 -- get the value in a JSON object that has this key
 getByKey :: JSValue -> String -> Maybe JSValue
-getByKey object key =
-  case object of
-    JSObject a ->
-      getFirst keyValues keyMatches
-      where keyValues = fromJSObject object
-            keyMatches (key', value) = key == key'
-    _ -> Nothing
-
--- get the first item in the list matching a predicate
-getFirst :: [a] -> (a -> Bool) -> Maybe a
-getFirst [] pred = Nothing
-getFirst (x:xs) pred =
-  case pred x of
-    True -> Just x
-    False -> getFirst xs pred
+getByKey (JSObject obj) key = lookup key (fromJSObject obj)
+getByKey _ _ = Nothing
 
 -- todaysWeather :: JSObject JSValue -> String
 todaysWeather json =

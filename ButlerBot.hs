@@ -26,6 +26,16 @@ httpGetJson url = do
 httpGetJsonObject :: URLString -> IO (Maybe (JSObject JSValue))
 httpGetJsonObject url = httpGetJson url
 
+-- get the value in a JSON object that has this key
+getByKey :: JSValue -> String -> Maybe JSValue
+getByKey object key =
+  case object of
+    JSObject a ->
+      getFirst keyValues keyMatches
+      where keyValues = fromJSObject object
+            keyMatches (key', value) = key == key'
+    _ -> Nothing
+
 -- get the first item in the list matching a predicate
 getFirst :: [a] -> (a -> Bool) -> Maybe a
 getFirst [] pred = Nothing

@@ -54,6 +54,13 @@ fromJSString' _ = Nothing
 showDouble :: Double -> String
 showDouble d = showFFloat Nothing d ""
 
+type Temperature = Double 
+
+data DayForecast = DayForecast { summary :: String,
+                                 minTemp :: Temperature,
+                                 maxTemp :: Temperature
+                               } deriving (Show)
+
 weatherSummariesByDay :: JSValue -> Maybe [String]
 weatherSummariesByDay json = do
   dailyObject <- getByKey "daily" json

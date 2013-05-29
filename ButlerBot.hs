@@ -58,4 +58,9 @@ weatherSummariesByDay json = do
   let summaries' = map fromJSString' $ summaries
   return $ catMaybes summaries'
 
+forecastIoUrl :: String -> Location -> String
+forecastIoUrl apiKey location =
+  "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ show lat ++ "," ++ show long
+  where Location (Latitude lat, Longitude long) = location
+      
 main = putStrLn "Hello, World!"

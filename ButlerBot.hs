@@ -14,7 +14,7 @@ london = Location (Latitude 51.5265, Longitude 0.0825)
 httpGet :: URLString -> IO (CurlCode, String)
 httpGet url = curlGetString url []
 
--- get JSON, returning Right for any failures
+-- get JSON, returning Nothing for any failures
 -- based on http://www.amateurtopologist.com/blog/2010/11/05/a-haskell-newbies-guide-to-text-json/
 httpGetJson :: JSON a => URLString -> IO (Maybe a)
 httpGetJson url = do

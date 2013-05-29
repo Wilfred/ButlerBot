@@ -2,6 +2,7 @@ import Numeric
 import Network.Curl
 import Text.JSON
 import Data.Maybe
+import Control.Monad
 
 newtype Latitude = Latitude Double deriving Show
 newtype Longitude = Longitude Double deriving Show
@@ -50,6 +51,10 @@ fromJSArray _ = Nothing
 fromJSString' (JSString s) = Just $ fromJSString s
 fromJSString' _ = Nothing
 
+fromJSRational :: JSValue -> Maybe Double
+fromJSRational (JSRational _ ratio) = Just $ fromRational ratio
+fromJSRational _ = Nothing
+
 -- doesn't use scientific notation
 showDouble :: Double -> String
 showDouble d = showFFloat Nothing d ""
@@ -61,18 +66,26 @@ data DayForecast = DayForecast { summary :: String,
                                  maxTemp :: Temperature
                                } deriving (Show)
 
-weatherSummariesByDay :: JSValue -> Maybe [String]
-weatherSummariesByDay json = do
+getForecasts :: JSValue -> Maybe [DayForecast]
+getForecasts json = do
   dailyObject <- getByKey "daily" json
   dailyData <- getByKey "data" dailyObject
-  let jsSummaries = jsArrayMap (getByKey "summary") dailyData
-  summaries <- fromJSArray $ jsSummaries
-  let summaries' = map fromJSString' $ summaries
-  return $ catMaybes summaries'
+  dailyData' <- fromJSArray dailyData
+  return $ mapMaybe getForecast dailyData'
+
+getForecast :: JSValue -> Maybe DayForecast
+getForecast json = do
+  summary <- getByKey "summary" json
+  summary' <- fromJSString' summary
+  min <- getByKey "temperatureMin" json
+  min' <- fromJSRational min
+  max <- getByKey "temperatureMax" json
+  max' <- fromJSRational max
+  return $ DayForecast {summary=summary', minTemp=min', maxTemp=max'}
 
 forecastIoUrl :: String -> Location -> String
 forecastIoUrl apiKey location =
   "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ showDouble lat ++ "," ++ showDouble long
   where Location (Latitude lat, Longitude long) = location
-      
+
 main = putStrLn "Hello, World!"

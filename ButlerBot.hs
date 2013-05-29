@@ -49,12 +49,13 @@ fromJSArray _ = Nothing
 fromJSString' (JSString s) = Just $ fromJSString s
 fromJSString' _ = Nothing
 
--- todaysWeather :: JSObject JSValue -> String
+weatherSummariesByDay :: JSValue -> Maybe [String]
 weatherSummariesByDay json = do
   dailyObject <- getByKey "daily" json
   dailyData <- getByKey "data" dailyObject
   let jsSummaries = jsArrayMap (getByKey "summary") dailyData
   summaries <- fromJSArray $ jsSummaries
-  return $ map fromJSString' $ summaries
+  let summaries' = map fromJSString' $ summaries
+  return $ catMaybes summaries'
 
 main = putStrLn "Hello, World!"

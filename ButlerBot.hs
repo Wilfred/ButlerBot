@@ -1,3 +1,4 @@
+import Numeric
 import Network.Curl
 import Text.JSON
 import Data.Maybe
@@ -49,6 +50,10 @@ fromJSArray _ = Nothing
 fromJSString' (JSString s) = Just $ fromJSString s
 fromJSString' _ = Nothing
 
+-- doesn't use scientific notation
+showDouble :: Double -> String
+showDouble d = showFFloat Nothing d ""
+
 weatherSummariesByDay :: JSValue -> Maybe [String]
 weatherSummariesByDay json = do
   dailyObject <- getByKey "daily" json
@@ -60,7 +65,7 @@ weatherSummariesByDay json = do
 
 forecastIoUrl :: String -> Location -> String
 forecastIoUrl apiKey location =
-  "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ show lat ++ "," ++ show long
+  "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ showDouble lat ++ "," ++ showDouble long
   where Location (Latitude lat, Longitude long) = location
       
 main = putStrLn "Hello, World!"

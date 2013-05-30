@@ -63,11 +63,18 @@ fromJSRational _ = Nothing
 showDouble :: Double -> String
 showDouble d = showFFloat Nothing d ""
 
-type Temperature = Double 
+data Fahrenheit = Fahrenheit Double deriving (Show, Eq, Ord)
+data Celsius = Celsius Double deriving (Show, Eq, Ord)
+
+toCelsius :: Fahrenheit -> Celsius
+toCelsius (Fahrenheit f) = Celsius $ (f - 32) * (5 / 9)
+
+toFahrenheit :: Celsius -> Fahrenheit
+toFahrenheit (Celsius c) = Fahrenheit $ c * 9 / 5 + 32
 
 data DayForecast = DayForecast { summary :: String,
-                                 minTemp :: Temperature,
-                                 maxTemp :: Temperature
+                                 minTemp :: Celsius,
+                                 maxTemp :: Celsius
                                } deriving (Show)
 
 getForecasts :: JSValue -> Maybe [DayForecast]
@@ -85,7 +92,9 @@ getForecast json = do
   min' <- fromJSRational min
   max <- getByKey "temperatureMax" json
   max' <- fromJSRational max
-  return $ DayForecast {summary=summary', minTemp=min', maxTemp=max'}
+  let minTemp = toCelsius $ Fahrenheit min'
+  let maxTemp = toCelsius $ Fahrenheit max'
+  return $ DayForecast {summary=summary', minTemp=minTemp, maxTemp=maxTemp}
 
 forecastIoUrl :: String -> Location -> String
 forecastIoUrl apiKey location =

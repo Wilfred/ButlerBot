@@ -96,5 +96,11 @@ main = do
       let url = forecastIoUrl apiKey london
       json <- httpGetJson url
       -- todo: handle Nothings here
-      putStrLn $ show $ fromJust $ getForecasts $ fromJust json
+      let forecasts = do
+            json' <- json
+            getForecasts json'
+      let forecastsText = case forecasts of
+            Just forecasts' -> show forecasts'
+            Nothing -> "Network or parse error getting forecasts."
+      putStrLn forecastsText
     _ -> putStrLn "Need an API key for forecast.io"

@@ -1,7 +1,10 @@
+{-# LANGUAGE OverloadedStrings #-}
 import Numeric
 import Network.Curl
+import Network.Mail.SMTP hiding (Ok, sendMail)
 import Text.JSON
 import Data.Maybe
+import Data.Text.Lazy (pack)
 import Control.Monad
 import System.Environment
 
@@ -89,6 +92,18 @@ forecastIoUrl apiKey location =
   "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ showDouble lat ++ "," ++ showDouble long
   where Location (Latitude lat, Longitude long) = location
 
+toEmail from to subject body =
+  let
+    from' = Address Nothing from
+    to' = [Address Nothing to]
+    cc = []
+    bcc = []
+    body' = plainTextPart body
+  in simpleMail from' to' cc bcc subject [body']
+
+sendMail from to subject body =
+  renderSendMail $ toEmail from to subject body
+
 main = do
   args <- getArgs
   case args of
@@ -103,4 +118,6 @@ main = do
             Just forecasts' -> show forecasts'
             Nothing -> "Network or parse error getting forecasts."
       putStrLn forecastsText
+      sendMail "test@example.com" "root@localhost" "hello world!" $ pack forecastsText
+      putStrLn "done!"
     _ -> putStrLn "Need an API key for forecast.io"

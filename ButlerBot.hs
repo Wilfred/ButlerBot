@@ -3,6 +3,7 @@ import Network.Curl
 import Text.JSON
 import Data.Maybe
 import Control.Monad
+import System.Environment
 
 newtype Latitude = Latitude Double deriving Show
 newtype Longitude = Longitude Double deriving Show
@@ -88,4 +89,12 @@ forecastIoUrl apiKey location =
   "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ showDouble lat ++ "," ++ showDouble long
   where Location (Latitude lat, Longitude long) = location
 
-main = putStrLn "Hello, World!"
+main = do
+  args <- getArgs
+  case args of
+    [apiKey] -> do
+      let url = forecastIoUrl apiKey london
+      json <- httpGetJson url
+      -- todo: handle Nothings here
+      putStrLn $ show $ fromJust $ getForecasts $ fromJust json
+    _ -> putStrLn "Need an API key for forecast.io"

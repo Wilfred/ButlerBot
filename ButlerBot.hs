@@ -101,6 +101,7 @@ forecastIoUrl apiKey location =
   "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ showDouble lat ++ "," ++ showDouble long
   where Location (Latitude lat, Longitude long) = location
 
+toEmail :: String -> String -> String -> String -> Network.Mail.Mime.Mail
 toEmail from to subject body =
   let
     from' = Address Nothing from

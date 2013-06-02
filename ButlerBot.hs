@@ -2,9 +2,11 @@
 import Numeric
 import Network.Curl
 import Network.Mail.SMTP hiding (Ok, sendMail)
+import Network.Mail.Mime (Mail)
 import Text.JSON
 import Data.Maybe
-import Data.Text.Lazy (pack)
+import Data.Text (pack)
+import qualified Data.Text.Lazy
 import Control.Monad
 import System.Environment
 
@@ -101,16 +103,18 @@ forecastIoUrl apiKey location =
   "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ showDouble lat ++ "," ++ showDouble long
   where Location (Latitude lat, Longitude long) = location
 
-toEmail :: String -> String -> String -> String -> Network.Mail.Mime.Mail
+toEmail :: String -> String -> String -> String -> Mail
 toEmail from to subject body =
   let
-    from' = Address Nothing from
-    to' = [Address Nothing to]
+    from' = Address Nothing $ pack from
+    to' = [Address Nothing $ pack to]
     cc = []
     bcc = []
-    body' = plainTextPart body
-  in simpleMail from' to' cc bcc subject [body']
+    body' = plainTextPart $ Data.Text.Lazy.pack body
+    subject' = pack subject
+  in simpleMail from' to' cc bcc subject' [body']
 
+sendMail :: String -> String -> String -> String -> IO ()
 sendMail from to subject body =
   renderSendMail $ toEmail from to subject body
 

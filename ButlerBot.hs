@@ -5,7 +5,7 @@ import Network.Mail.SMTP hiding (Ok, sendMail)
 import Network.Mail.Mime (Mail)
 import Text.JSON
 import Data.Maybe
-import Data.Text (pack)
+import Data.Text (pack, unpack, intercalate)
 import qualified Data.Text.Lazy
 import Control.Monad
 import System.Environment
@@ -74,10 +74,21 @@ toCelsius (Fahrenheit f) = Celsius $ (f - 32) * (5 / 9)
 toFahrenheit :: Celsius -> Fahrenheit
 toFahrenheit (Celsius c) = Fahrenheit $ c * 9 / 5 + 32
 
+describeCelsius :: Celsius -> String
+describeCelsius (Celsius c) = show (round c) ++ " C"
+
 data DayForecast = DayForecast { summary :: String,
                                  minTemp :: Celsius,
                                  maxTemp :: Celsius
                                } deriving (Show)
+
+describeForecast :: DayForecast -> String
+describeForecast day =
+  summary day ++ " Min: " ++ (describeCelsius $ minTemp day) ++ " Max: " ++ (describeCelsius $ maxTemp day)
+
+describeForecasts :: [DayForecast] -> String
+describeForecasts days =
+  unpack $ intercalate (pack "\n") $ map (pack . describeForecast) $ take 3 days
 
 getForecasts :: JSValue -> Maybe [DayForecast]
 getForecasts json = do
@@ -129,7 +140,7 @@ main = do
             json' <- json
             getForecasts json'
       let forecastsText = case forecasts of
-            Just forecasts' -> show forecasts'
+            Just forecasts' -> describeForecasts forecasts'
             Nothing -> "Network or parse error getting forecasts."
       putStrLn forecastsText
       sendMail "test@example.com" recipient "hello world!" forecastsText

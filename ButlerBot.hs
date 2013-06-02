@@ -121,7 +121,7 @@ sendMail from to subject body =
 main = do
   args <- getArgs
   case args of
-    [apiKey] -> do
+    [apiKey, recipient] -> do
       let url = forecastIoUrl apiKey london
       json <- httpGetJson url
       -- todo: handle Nothings here
@@ -132,6 +132,6 @@ main = do
             Just forecasts' -> show forecasts'
             Nothing -> "Network or parse error getting forecasts."
       putStrLn forecastsText
-      sendMail "test@example.com" "root@localhost" "hello world!" $ pack forecastsText
+      sendMail "test@example.com" recipient "hello world!" forecastsText
       putStrLn "done!"
-    _ -> putStrLn "Need an API key for forecast.io"
+    _ -> putStrLn "Usage: <api key> <recipient email>"

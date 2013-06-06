@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Numeric
-import Network.Curl
+import Network.HTTP.Wget (wget, WgetException)
 import Network.Mail.SMTP hiding (Ok, sendMail)
 import Network.Mail.Mime (Mail)
 import Text.JSON
@@ -8,6 +8,7 @@ import Data.Maybe
 import Data.Text (pack, unpack, intercalate)
 import qualified Data.Text.Lazy
 import Control.Monad
+import Control.Exception.Base (try)
 import System.Environment
 
 newtype Latitude = Latitude Double deriving Show
@@ -19,17 +20,24 @@ data Location = Location (Latitude, Longitude)
 london :: Location
 london = Location (Latitude 51.5265, Longitude 0.0825)
 
-httpGet :: URLString -> IO (CurlCode, String)
-httpGet url = curlGetString url []
+httpGet :: String -> IO (Maybe String)
+httpGet url = do
+  response <- try (wget url [] []) :: IO (Either WgetException String)
+  case response of
+    Left _ -> return Nothing
+    Right s -> return $ Just s
 
 -- get JSON, returning Nothing for any failures
 -- based on http://www.amateurtopologist.com/blog/2010/11/05/a-haskell-newbies-guide-to-text-json/
-httpGetJson :: JSON a => URLString -> IO (Maybe a)
+httpGetJson :: JSON a => String -> IO (Maybe a)
 httpGetJson url = do
-  (code, result) <- httpGet url
-  case (decode result) of
-    Ok object -> return (Just object)
-    Error s -> return Nothing
+  httpResult <- httpGet url
+  case httpResult of
+    Just result ->
+      case (decode result) of
+        Ok object -> return (Just object)
+        Error s -> return Nothing
+    Nothing -> return Nothing
 
 -- get the value in a JSON object that has this key
 getByKey :: String -> JSValue -> Maybe JSValue

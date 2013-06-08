@@ -24,3 +24,32 @@ You also need sendmail:
 Install ButlerBot:
 
     $ cabal-dev install
+
+#### Dependencies
+
+I'm running this on WebFaction.
+
+1: [Install GHC](http://community.webfaction.com/questions/5084/building-ghc-from-source). I
+used 7.4.
+
+2: [Install cabal-install](http://community.webfaction.com/questions/5098/installing-yesod-on-a-shared-account)
+
+3: Install
+   [curl from hackage](http://hackage.haskell.org/package/curl)
+   manually.
+
+    wget "http://hackage.haskell.org/packages/archive/curl/1.3.7/curl-1.3.7.tar.gz"
+    cd curl-1.3.7.tar.gz 
+    ghc --make Setup.hs 
+    ./Setup configure --user
+    ./Setup build
+    ./Setup install
+
+4: Install the remaining dependencies with cabal.
+
+    $ cabal install smtp-mail
+    $ cabal install json
+
+TODO: use ButlerBot.cabal and set explicit version numbers.
+
+5: Set up a cron job.

@@ -143,6 +143,6 @@ main = do
             Just forecasts' -> describeForecasts forecasts'
             Nothing -> "Network or parse error getting forecasts."
       putStrLn forecastsText
-      sendMail "test@example.com" recipient "hello world!" forecastsText
+      sendMail "butlerbot@wilfred.me.uk" recipient "Weather summary" forecastsText
       putStrLn "done!"
     _ -> putStrLn "Usage: <api key> <recipient email>"

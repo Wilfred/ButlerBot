@@ -75,7 +75,10 @@ toFahrenheit :: Celsius -> Fahrenheit
 toFahrenheit (Celsius c) = Fahrenheit $ c * 9 / 5 + 32
 
 describeCelsius :: Celsius -> String
-describeCelsius (Celsius c) = show (round c) ++ " C"
+describeCelsius (Celsius c) =
+  show (round c) ++ " C (" ++ show (round f) ++ " F)"
+  where
+    (Fahrenheit f) = toFahrenheit (Celsius c)
 
 data DayForecast = DayForecast { summary :: String,
                                  minTemp :: Celsius,

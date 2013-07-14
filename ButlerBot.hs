@@ -6,6 +6,7 @@ import Network.Mail.Mime (Mail)
 import Text.JSON
 import Data.Maybe
 import Data.Text (pack, unpack, intercalate)
+import Data.DateTime (fromSeconds, formatDateTime, DateTime)
 import qualified Data.Text.Lazy
 import Control.Monad
 import System.Environment
@@ -81,6 +82,7 @@ describeCelsius (Celsius c) =
     (Fahrenheit f) = toFahrenheit (Celsius c)
 
 data DayForecast = DayForecast { summary :: String,
+                                 time :: DateTime,
                                  minTemp :: Celsius,
                                  maxTemp :: Celsius
                                } deriving (Show)
@@ -110,7 +112,10 @@ getForecast json = do
   max' <- fromJSRational max
   let minTemp = toCelsius $ Fahrenheit min'
   let maxTemp = toCelsius $ Fahrenheit max'
-  return $ DayForecast {summary=summary', minTemp=minTemp, maxTemp=maxTemp}
+  time <- getByKey "time" json
+  time' <- fromJSRational time
+  let time'' = fromSeconds $ round time'
+  return $ DayForecast {summary=summary', minTemp=minTemp, maxTemp=maxTemp, time=time''}
 
 forecastIoUrl :: String -> Location -> String
 forecastIoUrl apiKey location =

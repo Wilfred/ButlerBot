@@ -89,8 +89,9 @@ data DayForecast = DayForecast { summary :: String,
 
 describeForecast :: DayForecast -> String
 describeForecast f =
-  summary' ++ " Min: " ++ minTemp' ++ " Max: " ++ maxTemp'
+  day ++ ": " ++ summary' ++ " Min: " ++ minTemp' ++ " Max: " ++ maxTemp'
   where
+    day = formatDateTime "%A" $ time f
     summary' = summary f
     minTemp' = describeCelsius $ minTemp f
     maxTemp' = describeCelsius $ maxTemp f
@@ -118,7 +119,11 @@ getForecast json = do
   let maxTemp = toCelsius $ Fahrenheit max'
   time <- getByKey "time" json
   time' <- fromJSRational time
-  let time'' = fromSeconds $ round time'
+  -- Timestamps from forecast.io are in unix time, so UTC.
+  -- In the summer, midnight is 11pm yesterday. Since we're only
+  -- interested in days anyway, we add an hour to make sure we
+  -- have the right day. TODO: Use Dates instead.
+  let time'' = fromSeconds $ round time' + 60 * 60
   return $ DayForecast {summary=summary', minTemp=minTemp, maxTemp=maxTemp, time=time''}
 
 forecastIoUrl :: String -> Location -> String

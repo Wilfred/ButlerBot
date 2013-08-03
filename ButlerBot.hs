@@ -9,7 +9,7 @@ import Data.DateTime (fromSeconds, formatDateTime, DateTime)
 import qualified Data.Text.Lazy
 import System.Environment (getArgs)
 import JsonParsing (httpGetJson, getByKey,
-                    fromJSRational, fromJSString', fromJSArray)
+                    fromJSRational, fromJSString, fromJSArray)
 
 newtype Latitude = Latitude Double deriving Show
 newtype Longitude = Longitude Double deriving Show
@@ -68,7 +68,7 @@ getForecasts json = do
 getForecast :: JSValue -> Maybe DayForecast
 getForecast json = do
   summary <- getByKey "summary" json
-  summary' <- fromJSString' summary
+  summary' <- fromJSString summary
   min <- getByKey "temperatureMin" json
   min' <- fromJSRational min
   max <- getByKey "temperatureMax" json

@@ -5,6 +5,7 @@ import Network.Curl (curlGetString, CurlCode, URLString)
 import Text.JSON (JSON, decode, Result(Ok, Error),
                   JSValue(JSArray, JSObject, JSString, JSRational),
                   fromJSObject, fromJSString)
+import qualified Text.JSON as JSON
 
 
 httpGet :: URLString -> IO (CurlCode, String)
@@ -41,9 +42,9 @@ fromJSArray :: JSValue -> Maybe [JSValue]
 fromJSArray (JSArray arr) = Just arr
 fromJSArray _ = Nothing
 
--- fromJSString :: JSValue -> Maybe 
-fromJSString' (JSString s) = Just $ fromJSString s
-fromJSString' _ = Nothing
+fromJSString :: JSValue -> Maybe String
+fromJSString (JSString s) = Just $ JSON.fromJSString s
+fromJSString _ = Nothing
 
 fromJSRational :: JSValue -> Maybe Double
 fromJSRational (JSRational _ ratio) = Just $ fromRational ratio

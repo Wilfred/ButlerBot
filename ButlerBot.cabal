@@ -1,6 +1,6 @@
 Name:                ButlerBot
-Version:             0.1
-Description:         Daily email news
+Version:             0.2
+Description:         Daily weather emails
 License:             GPL
 Author:              Wilfred Hughes
 Maintainer:          me@wilfred.me.uk
@@ -8,4 +8,4 @@ Build-Type:          Simple
 Cabal-Version:       >=1.2
 Executable butler-bot
   Main-is:           ButlerBot.hs
-  Build-Depends:     base, curl, json, smtp-mail, datetime
+  Build-Depends:     base, curl, json, smtp-mail, datetime, text, mime-mail

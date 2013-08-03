@@ -88,8 +88,12 @@ data DayForecast = DayForecast { summary :: String,
                                } deriving (Show)
 
 describeForecast :: DayForecast -> String
-describeForecast day =
-  summary day ++ " Min: " ++ (describeCelsius $ minTemp day) ++ " Max: " ++ (describeCelsius $ maxTemp day)
+describeForecast f =
+  summary' ++ " Min: " ++ minTemp' ++ " Max: " ++ maxTemp'
+  where
+    summary' = summary f
+    minTemp' = describeCelsius $ minTemp f
+    maxTemp' = describeCelsius $ maxTemp f
 
 describeForecasts :: [DayForecast] -> String
 describeForecasts days =

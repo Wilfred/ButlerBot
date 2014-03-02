@@ -3,3 +3,5 @@
 cabal-dev
 dist
 *.pyc
+.cabal-sandbox
+cabal.sandbox.config

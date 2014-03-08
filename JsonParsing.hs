@@ -49,6 +49,3 @@ fromJSString _ = Nothing
 fromJSRational :: JSValue -> Maybe Double
 fromJSRational (JSRational _ ratio) = Just $ fromRational ratio
 fromJSRational _ = Nothing
-
-
-

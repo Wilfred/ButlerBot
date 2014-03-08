@@ -1,7 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Numeric
-import Network.Mail.SMTP hiding (Ok, sendMail)
-import Network.Mail.Mime (Mail)
 import Text.JSON (JSValue)
 import Data.Maybe (mapMaybe)
 import Data.Text (pack, unpack, intercalate)
@@ -10,6 +8,7 @@ import qualified Data.Text.Lazy
 import System.Environment (getArgs)
 import JsonParsing (httpGetJson, getByKey,
                     fromJSRational, fromJSString, fromJSArray)
+import SendEmail (sendEmail)
 
 newtype Latitude = Latitude Double deriving Show
 newtype Longitude = Longitude Double deriving Show
@@ -89,26 +88,11 @@ forecastIoUrl apiKey location =
   "https://api.forecast.io/forecast/" ++ apiKey ++ "/" ++ showDouble lat ++ "," ++ showDouble long
   where Location (Latitude lat, Longitude long) = location
 
-toEmail :: String -> String -> String -> String -> Mail
-toEmail from to subject body =
-  let
-    from' = Address Nothing $ pack from
-    to' = [Address Nothing $ pack to]
-    cc = []
-    bcc = []
-    body' = plainTextPart $ Data.Text.Lazy.pack body
-    subject' = pack subject
-  in simpleMail from' to' cc bcc subject' [body']
-
-sendMail :: String -> String -> String -> String -> IO ()
-sendMail from to subject body =
-  renderSendMail $ toEmail from to subject body
-
 main = do
   args <- getArgs
   case args of
-    [apiKey, recipient] -> do
-      let url = forecastIoUrl apiKey london
+    [forecastIoKey, mailgunKey, recipient] -> do
+      let url = forecastIoUrl forecastIoKey london
       json <- httpGetJson url
       -- todo: handle Nothings here
       let forecasts = do
@@ -118,6 +102,6 @@ main = do
             Just forecasts' -> describeForecasts forecasts'
             Nothing -> "Network or parse error getting forecasts."
       putStrLn forecastsText
-      sendMail "butlerbot@wilfred.me.uk" recipient "Weather summary" forecastsText
+      sendEmail mailgunKey recipient "Weather summary" forecastsText
       putStrLn "done!"
-    _ -> putStrLn "Usage: <api key> <recipient email>"
+    _ -> putStrLn "Usage: <forecast.io api key> <mailgun credentials e.g. api:key-12345> <recipient email>"

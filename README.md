@@ -12,20 +12,10 @@ You need cURL installed for HTTPS GET:
 
     $ sudo apt-get install libcurl4-gnutls-dev
 
-You also need sendmail:
-
-    $ sudo apt-get install sendmail
-    # you can test with:
-    $ sendmail root@localhost
-    Subject: test
-
-    testing testing^D
-    # then to see the sent message:
-    $ sudo less /var/mail/root
-
 Install ButlerBot:
 
     $ cd /path/to/butlerbot_source
+    $ cabal sandbox init
     $ cabal install
 
 On production, just set up a cron job:
@@ -36,4 +26,4 @@ For example:
 
     $ crontab -l
     # send weather forecast emails
-    0 6 * * * ~/.cabal/bin/butler-bot "api-key" "wilfred@example.com"
+    0 6 * * * ~/src/butlerbot/.cabal-sandbox/bin/butler-bot "forecast-io-key" "mailgun-key" "wilfred@example.com"

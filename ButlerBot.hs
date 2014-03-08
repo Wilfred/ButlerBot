@@ -1,5 +1,7 @@
 import qualified Data.Text.Lazy
 import System.Environment (getArgs)
+import System.Exit(exitFailure)
+
 import JsonParsing (httpGetJson)
 import SendEmail (sendEmail)
 import Weather (forecastIoUrl, getForecasts, describeForecasts, london)
@@ -20,4 +22,6 @@ main = do
       putStrLn forecastsText
       sendEmail mailgunKey recipient "Weather summary" forecastsText
       putStrLn "done!"
-    _ -> putStrLn "Usage: <forecast.io api key> <mailgun credentials e.g. api:key-12345> <recipient email>"
+    _ -> do
+      putStrLn "Usage: <forecast.io api key> <mailgun credentials e.g. api:key-12345> <recipient email>"
+      exitFailure

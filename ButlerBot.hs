@@ -82,7 +82,7 @@ getForecast json = do
   -- interested in days anyway, we add an hour to make sure we
   -- have the right day. TODO: Use Dates instead.
   let time'' = fromSeconds $ round time' + 60 * 60
-  return $ DayForecast {summary=summary', minTemp=minTemp, maxTemp=maxTemp, time=time''}
+  return DayForecast {summary=summary', minTemp=minTemp, maxTemp=maxTemp, time=time''}
 
 forecastIoUrl :: String -> Location -> String
 forecastIoUrl apiKey location =
